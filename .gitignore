@@ -19,3 +19,6 @@ prisma/*.db-journal
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Local delivery artifacts (git bundle / source tarball)
+_handoff/
