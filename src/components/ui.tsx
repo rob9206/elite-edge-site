@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { JobStatus, TaskStatus, PaymentStatus } from '@prisma/client';
 import { logoutAction } from '@/lib/auth/actions';
+import { Brand } from '@/components/Brand';
 import type { SessionData } from '@/lib/auth/options';
 
 const JOB_COLORS: Record<JobStatus, string> = {
@@ -54,8 +55,8 @@ export function TopBar({ user }: { user: SessionData }) {
   return (
     <header className="border-b border-ink-700 bg-ink-850/80 backdrop-blur sticky top-0 z-10">
       <div className="mx-auto max-w-6xl flex items-center gap-4 px-6 h-14">
-        <Link href="/jobs" className="font-display font-black uppercase tracking-tight text-white">
-          Elite Edge <span className="text-gold">Ops</span>
+        <Link href="/jobs" aria-label="Apex Power Ops — jobs">
+          <Brand />
         </Link>
         <nav className="flex gap-1 text-sm ml-4">
           <Link href="/jobs" className="px-3 py-1.5 rounded hover:text-gold hover:bg-gold/10">Jobs</Link>

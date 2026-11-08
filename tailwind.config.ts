@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss';
 
-// Elite Edge Ops — reuses the brand's high-voltage industrial palette
+// Apex Power Ops — reuses the brand's high-voltage industrial palette
 // (gold on graphite) so the internal tool matches the company identity.
 const config: Config = {
   content: ['./src/**/*.{ts,tsx}'],

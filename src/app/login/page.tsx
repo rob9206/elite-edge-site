@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import LoginForm from './LoginForm';
+import { Brand } from '@/components/Brand';
 
 export default async function LoginPage() {
   if (await getCurrentUser()) redirect('/jobs');
@@ -8,10 +9,10 @@ export default async function LoginPage() {
     <main className="min-h-screen grid place-items-center px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <h1 className="font-display font-black uppercase tracking-tight text-2xl text-white">
-            Elite Edge <span className="text-gold">Ops</span>
+          <h1 className="flex justify-center">
+            <Brand size="lg" />
           </h1>
-          <p className="text-ink-400 text-sm mt-1">Staff sign-in</p>
+          <p className="text-ink-400 text-sm mt-2">Staff sign-in</p>
         </div>
         <div className="card p-6">
           <LoginForm />

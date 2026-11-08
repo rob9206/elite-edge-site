@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Elite Edge Ops',
+  title: 'Apex Power Ops',
   description: 'Internal job intake, estimating, planning, and ledger.',
   robots: { index: false, follow: false },
 };
