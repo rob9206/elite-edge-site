@@ -70,8 +70,8 @@ export default function EstimateEditor({
       <input type="hidden" name="taxBps" value={Math.round(taxPct * 100)} />
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="text-ink-400 text-xs uppercase tracking-wide">
+        <table className="w-full min-w-[42rem] text-sm" aria-label="Estimate line items">
+          <thead className="bg-stone-50 text-xs text-neutral-600">
             <tr>
               <th className="text-left font-semibold py-2">Description</th>
               <th className="text-right font-semibold py-2">Qty</th>
@@ -79,30 +79,33 @@ export default function EstimateEditor({
               <th className="text-right font-semibold py-2">Unit cost</th>
               <th className="text-right font-semibold py-2">Markup %</th>
               <th className="text-right font-semibold py-2">Line total</th>
-              <th></th>
+              <th><span className="sr-only">Remove line</span></th>
             </tr>
           </thead>
           <tbody>
             {lines.map((l, i) => (
-              <tr key={l.id} className="border-t border-ink-700">
+              <tr key={l.id} className="border-t border-stone-200">
                 <td className="py-1.5 pr-2">
                   <input
-                    className="input py-1"
+                    aria-label={`Description, line ${i + 1}`}
+                    className="input min-w-[10rem] py-1"
                     value={l.description}
                     onChange={(e) => update(i, { description: e.target.value })}
                   />
                   <select
-                    className="mt-1 text-xs bg-transparent text-ink-500"
+                    aria-label={`Category, line ${i + 1}`}
+                    className="mt-1 rounded bg-transparent text-xs text-neutral-600"
                     value={l.category}
                     onChange={(e) => update(i, { category: e.target.value as LineCategory })}
                   >
-                    {CATEGORIES.map((c) => <option key={c} value={c} className="bg-ink-800">{c}</option>)}
+                    {CATEGORIES.map((c) => <option key={c} value={c} className="bg-white">{c}</option>)}
                   </select>
                 </td>
                 <td className="py-1.5">
                   <input
                     type="number" min="0" step="any"
                     className="input py-1 w-20 text-right mono"
+                    aria-label={`Quantity, line ${i + 1}`}
                     value={l.qty}
                     onChange={(e) => update(i, { qty: Number(e.target.value) })}
                   />
@@ -110,6 +113,7 @@ export default function EstimateEditor({
                 <td className="py-1.5 pl-2">
                   <input
                     className="input py-1 w-16"
+                    aria-label={`Unit, line ${i + 1}`}
                     value={l.unit}
                     onChange={(e) => update(i, { unit: e.target.value })}
                   />
@@ -118,6 +122,7 @@ export default function EstimateEditor({
                   <input
                     type="number" min="0" step="0.01"
                     className="input py-1 w-28 text-right mono"
+                    aria-label={`Unit cost in dollars, line ${i + 1}`}
                     value={(l.unitCostCents / 100).toString()}
                     onChange={(e) => update(i, { unitCostCents: Math.round(Number(e.target.value) * 100) })}
                   />
@@ -126,13 +131,19 @@ export default function EstimateEditor({
                   <input
                     type="number" min="0" step="any"
                     className="input py-1 w-20 text-right mono"
+                    aria-label={`Markup percent, line ${i + 1}`}
                     value={(l.markupBps / 100).toString()}
                     onChange={(e) => update(i, { markupBps: Math.round(Number(e.target.value) * 100) })}
                   />
                 </td>
-                <td className="py-1.5 text-right mono text-white">{formatUsd(lineTotalCents(l))}</td>
+                <td className="py-1.5 text-right mono text-neutral-900">{formatUsd(lineTotalCents(l))}</td>
                 <td className="py-1.5 pl-2">
-                  <button type="button" onClick={() => remove(i)} className="text-ink-500 hover:text-edge-red">✕</button>
+                  <button
+                    type="button"
+                    aria-label={`Remove line ${i + 1}`}
+                    onClick={() => remove(i)}
+                    className="rounded-md p-1 text-neutral-600 hover:bg-stone-100 hover:text-edge-red"
+                  >×</button>
                 </td>
               </tr>
             ))}
@@ -142,26 +153,26 @@ export default function EstimateEditor({
 
       <button type="button" onClick={addManual} className="btn-ghost text-xs">+ Add manual line</button>
 
-      <div className="flex flex-col items-end gap-1 border-t border-ink-700 pt-3 text-sm">
+      <div className="flex flex-col items-end gap-1 border-t border-stone-200 pt-3 text-sm">
         <div className="flex items-center gap-3">
-          <span className="text-ink-400">Subtotal</span>
-          <span className="mono w-28 text-right text-white">{formatUsd(totals.subtotal)}</span>
+          <span className="text-neutral-600">Subtotal</span>
+          <span className="mono w-28 text-right text-neutral-900">{formatUsd(totals.subtotal)}</span>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-ink-400">Contingency %</label>
-          <input type="number" min="0" step="any" className="input py-0.5 w-16 text-right mono"
+          <label className="text-neutral-600" htmlFor="estimate-contingency">Contingency %</label>
+          <input id="estimate-contingency" type="number" min="0" step="any" className="input py-0.5 w-16 text-right mono"
             value={contingencyPct} onChange={(e) => setContingencyPct(Number(e.target.value))} />
-          <span className="mono w-28 text-right text-ink-200">{formatUsd(totals.contingency)}</span>
+          <span className="mono w-28 text-right text-neutral-800">{formatUsd(totals.contingency)}</span>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-ink-400">Tax %</label>
-          <input type="number" min="0" step="any" className="input py-0.5 w-16 text-right mono"
+          <label className="text-neutral-600" htmlFor="estimate-tax">Tax %</label>
+          <input id="estimate-tax" type="number" min="0" step="any" className="input py-0.5 w-16 text-right mono"
             value={taxPct} onChange={(e) => setTaxPct(Number(e.target.value))} />
-          <span className="mono w-28 text-right text-ink-200">{formatUsd(totals.tax)}</span>
+          <span className="mono w-28 text-right text-neutral-800">{formatUsd(totals.tax)}</span>
         </div>
-        <div className="flex items-center gap-3 border-t border-ink-700 pt-1 mt-1">
-          <span className="font-display font-bold uppercase text-white">Total</span>
-          <span className="mono w-28 text-right text-gold text-lg font-bold">{formatUsd(totals.total)}</span>
+        <div className="flex items-center gap-3 border-t border-stone-200 pt-1 mt-1">
+          <span className="font-semibold text-neutral-900">Total</span>
+          <span className="mono w-28 text-right text-neutral-900 text-lg font-bold">{formatUsd(totals.total)}</span>
         </div>
       </div>
 
