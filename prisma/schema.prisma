@@ -1,0 +1,224 @@
+// Elite Edge Construction — internal ops tool
+// Postgres via Prisma. Money is ALWAYS stored as integer cents.
+// Percentages are stored as integer basis points (bps): 10% = 1000, 12.5% = 1250.
+// The `ledger` table is append-only: rows are inserted, never updated.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ──────────────────────────────── enums ────────────────────────────────
+
+enum Role {
+  admin // Foti — full access
+  crew // Steve — full read-only
+}
+
+enum JobStatus {
+  draft
+  estimated
+  approved
+  scheduled
+  active
+  closed
+}
+
+enum Assignee {
+  foti
+  steve
+}
+
+enum TaskStatus {
+  pending
+  active
+  blocked
+  done
+}
+
+enum LedgerEvent {
+  created
+  estimated
+  approved
+  assigned
+  payment_pending
+  payment_confirmed
+  paid
+  payment_incomplete
+  change_order
+  note
+  closed
+}
+
+enum PaymentKind {
+  BTC
+  BTC_LIGHTNING
+}
+
+enum PaymentStatus {
+  pending
+  confirmed
+  complete
+  incomplete
+}
+
+// ──────────────────────────────── models ────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique // "foti" | "steve"
+  name         String
+  role         Role
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Job {
+  id             String    @id @default(cuid())
+  customerName   String    @map("customer_name")
+  phone          String
+  email          String
+  address        String
+  jobType        String    @map("job_type") // keys into the unit-cost catalog
+  description    String
+  measurements   Json      @default("{}") // { key: number } measured quantities
+  siteConditions Json      @default("{}") @map("site_conditions")
+  photos         String[]  @default([])
+  status         JobStatus @default(draft)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  estimates Estimate[]
+  plans     Plan[]
+  tasks     Task[]
+  ledger    LedgerEntry[]
+  payments  Payment[]
+
+  @@index([status])
+  @@map("jobs")
+}
+
+model Estimate {
+  id              String    @id @default(cuid())
+  jobId           String    @map("job_id")
+  lineItems       Json      @map("line_items") // LineItem[] (see src/lib/estimate)
+  subtotalCents   Int       @map("subtotal_cents")
+  contingencyBps  Int       @map("contingency_bps")
+  contingencyCents Int      @map("contingency_cents")
+  taxBps          Int       @map("tax_bps")
+  taxCents        Int       @map("tax_cents")
+  totalCents      Int       @map("total_cents")
+  revision        Int       @default(1)
+  approvedBy      String?   @map("approved_by")
+  approvedAt      DateTime? @map("approved_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  job      Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  plans    Plan[]
+  payments Payment[]
+
+  @@index([jobId])
+  @@map("estimates")
+}
+
+model Plan {
+  id         String   @id @default(cuid())
+  jobId      String   @map("job_id")
+  estimateId String   @map("estimate_id")
+  sequence   Int      @default(1)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  job      Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  tasks    Task[]
+
+  @@index([jobId])
+  @@map("plans")
+}
+
+model Task {
+  id         String     @id @default(cuid())
+  planId     String     @map("plan_id")
+  jobId      String     @map("job_id")
+  title      String
+  detail     String     @default("")
+  complexity Int // 1-5
+  assignedTo Assignee   @map("assigned_to")
+  dependsOn  String[]   @default([]) @map("depends_on") // Task.id[]
+  estHours   Float      @default(0) @map("est_hours")
+  orderIndex Int        @map("order_index") // dependency (topological) order
+  status     TaskStatus @default(pending)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@index([jobId])
+  @@map("tasks")
+}
+
+// Append-only. Never updated.
+model LedgerEntry {
+  id        String      @id @default(cuid())
+  jobId     String      @map("job_id")
+  event     LedgerEvent
+  actor     String // username or "customer" or "system"
+  payload   Json        @default("{}")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @default(now()) @map("updated_at") // set once on insert; never touched
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, createdAt])
+  @@map("ledger")
+}
+
+model Payment {
+  id                      String        @id @default(cuid())
+  jobId                   String        @map("job_id")
+  estimateId              String        @map("estimate_id")
+  uniwireInvoiceId        String        @unique @map("uniwire_invoice_id")
+  kind                    PaymentKind
+  amountCents             Int           @map("amount_cents") // manual, operator-entered, > 0
+  currency                String        @default("USD")
+  status                  PaymentStatus @default(pending)
+  address                 String? // on-chain deposit address (kind=BTC)
+  lightningPaymentRequest String?       @map("lightning_payment_request") // bolt11 (kind=BTC_LIGHTNING)
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime      @updatedAt @map("updated_at")
+
+  job       Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  estimate  Estimate          @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  callbacks PaymentCallback[]
+
+  @@index([jobId])
+  @@map("payments")
+}
+
+// Raw inbound webhook bodies, stored for replay/audit.
+model PaymentCallback {
+  id               String   @id @default(cuid())
+  uniwireInvoiceId String   @map("uniwire_invoice_id")
+  paymentId        String?  @map("payment_id")
+  status           String // raw status string from the callback
+  signatureValid   Boolean  @map("signature_valid")
+  rawBody          String   @map("raw_body") // verbatim request body
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @map("updated_at")
+
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([uniwireInvoiceId])
+  @@map("payment_callbacks")
+}
