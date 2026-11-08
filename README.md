@@ -1,6 +1,6 @@
 # Apex Power Ops
 
-Internal job pipeline for Elite Edge Construction: **public intake → estimate → approval → plan of action → ledger**, with crypto invoice collection via Uniwire.
+Internal job pipeline for Apex Power: **public intake → estimate → approval → plan of action → ledger**, with crypto invoice collection via Uniwire.
 
 Single-tenant internal tool for a two-person crew (Foti, Steve) plus a public, no-login estimate request form.
 

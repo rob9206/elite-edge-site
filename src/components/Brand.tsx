@@ -26,7 +26,7 @@ export function BoltMark({ height = 28 }: { height?: number }) {
 }
 
 /** Wordmark: two-bolt mark + "APEX POWER OPS". */
-export function Brand({ size = 'md' }: { size?: 'md' | 'lg' }) {
+export function Brand({ size = 'md', ops = true }: { size?: 'md' | 'lg'; ops?: boolean }) {
   const lg = size === 'lg';
   return (
     <span className="inline-flex items-center gap-2.5">
@@ -34,7 +34,11 @@ export function Brand({ size = 'md' }: { size?: 'md' | 'lg' }) {
       <span
         className={`font-display font-black uppercase tracking-tight text-white ${lg ? 'text-2xl' : 'text-base'}`}
       >
-        Apex Power <span className="text-gold">Ops</span>
+        {ops ? (
+          <>Apex Power <span className="text-gold">Ops</span></>
+        ) : (
+          <>Apex <span className="text-gold">Power</span></>
+        )}
       </span>
     </span>
   );

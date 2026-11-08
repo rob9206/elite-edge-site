@@ -1,6 +1,7 @@
 import IntakeForm from './IntakeForm';
+import { Brand } from '@/components/Brand';
 
-export const metadata = { title: 'Request an Estimate — Elite Edge Construction' };
+export const metadata = { title: 'Request an Estimate — Apex Power' };
 
 export default function RequestPage() {
   return (
@@ -8,6 +9,7 @@ export default function RequestPage() {
       <div className="hazard" />
       <div className="mx-auto max-w-2xl px-6 py-12">
         <div className="mb-8">
+          <div className="mb-6"><Brand ops={false} /></div>
           <div className="text-xs font-semibold uppercase tracking-widest text-gold mb-2">
             Free, no-obligation
           </div>

@@ -1,4 +1,4 @@
-// Elite Edge Construction — internal ops tool
+// Apex Power — internal ops tool
 // Postgres via Prisma. Money is ALWAYS stored as integer cents.
 // Percentages are stored as integer basis points (bps): 10% = 1000, 12.5% = 1250.
 // The `ledger` table is append-only: rows are inserted, never updated.
