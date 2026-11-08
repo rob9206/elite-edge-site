@@ -45,7 +45,7 @@ function Account({ user }: { user: SessionData }) {
   );
 }
 
-export function WorkspaceShell({ user, children, jobName, hasPlan }: Props) {
+export function WorkspaceShell({ user, children, jobName }: Props) {
   const navigation = (
     <>
       <WorkspaceLinks user={user} isIndex={!jobName} />
@@ -54,7 +54,7 @@ export function WorkspaceShell({ user, children, jobName, hasPlan }: Props) {
           <span>This job</span>
           <a href="#request">Request</a>
           <a href="#estimate">Estimate</a>
-          {hasPlan && <a href="#plan">Plan of action</a>}
+          <a href="#plan">Briefing</a>
           <a href="#payments">Payments</a>
           <a href="#ledger">Ledger</a>
         </nav>
