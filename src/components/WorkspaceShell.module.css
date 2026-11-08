@@ -112,7 +112,8 @@
   }
   .mobileMenu summary::-webkit-details-marker { display: none; }
   .mobileMenu summary > span:last-child { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
-  .mobileMenu .links { margin: 0 14px 12px; }
+  .mobileMenu .links, .mobileMenu .sections { margin: 0 14px 12px; }
+  .mobileMenu .sections { padding-top: 12px; }
   .mobileMenu .account { margin: 0 18px; padding-block: 12px; }
   .breadcrumb { min-height: 41px; padding-block: 9px; }
 }

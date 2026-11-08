@@ -109,6 +109,8 @@ Deterministic, **not LLM-guessed** (`src/lib/estimate`). Line items come from a 
 
 ## Tests & acceptance criteria
 
+For the browser regressions, start the app against a disposable local database with the staff accounts and demo jobs from `db:seed` and `db:demo`. The demo seed replaces the jobs in that database. Install Chromium with `npx playwright-core install chromium`, then run `npm run test:browser`. The suite defaults to `http://localhost:3000` and the development seed passwords. Export `BROWSER_BASE_URL` or the matching `SEED_FOTI_PASSWORD` and `SEED_STEVE_PASSWORD` when using other local settings. To use an installed Chromium binary, set `CHROMIUM_EXECUTABLE_PATH`.
+
 `npm test` (28 tests) covers the deterministic core. Mapping to the brief's acceptance criteria:
 
 | # | Criterion | Where |
