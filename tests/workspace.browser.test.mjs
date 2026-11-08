@@ -8,7 +8,7 @@ const draftJob = 'Dana Reyes';
 const sections = [
   ['Request', '#request'],
   ['Estimate', '#estimate'],
-  ['Plan of action', '#plan'],
+  ['Briefing', '#plan'],
   ['Payments', '#payments'],
   ['Ledger', '#ledger'],
 ];
@@ -61,7 +61,17 @@ for (const [width, user] of [[390, 'steve'], [800, 'foti'], [801, 'steve'], [144
       assert.equal(await navigation.count(), 1, 'one exposed job navigation landmark');
       const invoice = page.getByRole('button', { name: 'Issue invoice' });
       assert.equal(await invoice.count(), Number(user === 'foti' && job === plannedJob));
-      const expected = job === plannedJob ? sections : sections.filter(([, hash]) => hash !== '#plan');
+      const expected = sections;
+      const briefing = page.locator('#plan');
+      await briefing.getByRole('heading', { name: 'Job briefing', exact: true }).waitFor();
+      assert.equal(await briefing.locator('form, button, input, ol, li').count(), 0, 'briefing is not an interactive checklist');
+      const diagram = briefing.getByRole('figure', { name: 'Job-flow diagram' });
+      assert.equal(await diagram.getByRole('link').count(), 4, 'four workflow nodes');
+      assert.ok(await briefing.evaluate(el => el.scrollWidth <= el.clientWidth + 1), 'briefing fits its container');
+      for (const link of await diagram.getByRole('link').all()) {
+        const href = await link.getAttribute('href');
+        assert.equal(await page.locator(href).count(), 1, 'diagram links have unique destinations');
+      }
       assert.deepEqual(await navigation.getByRole('link').allTextContents(), expected.map(([label]) => label));
       for (const [label, hash] of expected) {
         const link = navigation.getByRole('link', { name: label, exact: true });
