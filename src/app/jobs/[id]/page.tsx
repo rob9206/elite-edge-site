@@ -2,17 +2,16 @@ import { notFound } from 'next/navigation';
 import { requireUser } from '@/lib/auth/session';
 import { prisma } from '@/lib/db';
 import { WorkspaceShell } from '@/components/WorkspaceShell';
-import { JobBadge, TaskBadge, PaymentBadge, AssigneeBadge } from '@/components/ui';
+import { JobBadge, PaymentBadge } from '@/components/ui';
 import { formatUsd, formatPct } from '@/lib/money';
 import { computeEstimate } from '@/lib/estimate/engine';
 import { JOB_TYPES } from '@/lib/estimate/catalog';
 import type { LineItem } from '@/lib/estimate/types';
 import EstimateEditor from './EstimateEditor';
+import JobBriefing from './JobBriefing';
 import {
   buildEstimateForm,
   approveEstimateForm,
-  reassignForm,
-  setTaskStatusForm,
   issueInvoiceForm,
   addNoteForm,
   closeJobForm,
@@ -44,7 +43,6 @@ export default async function JobPage({
   const latest = job.estimates[0];
   const approved = job.estimates.find((e) => e.approvedAt) ?? null;
   const plan = job.plans[0] ?? null;
-  const taskNumber = new Map(plan?.tasks.map((t, i) => [t.id, i + 1]) ?? []);
 
   const computed = latest
     ? computeEstimate(latest.lineItems as unknown as LineItem[], latest.contingencyBps, latest.taxBps)
@@ -144,57 +142,16 @@ export default async function JobPage({
           )}
         </section>
 
-        {/* PLAN / TASKS */}
-        {plan && (
-          <section id="plan" tabIndex={-1} className="card min-w-0 p-4 sm:p-5">
-            <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-4">
-              Plan of action
-            </h2>
-            <ol className="divide-y divide-stone-200">
-              {plan.tasks.map((t) => (
-                <li key={t.id} className="grid grid-cols-[1.6rem_minmax(0,1fr)] items-start gap-x-2 gap-y-1.5 py-2 lg:grid-cols-[1.6rem_minmax(0,1fr)_auto]">
-                  <span className="mt-0.5 text-xs tabular-nums text-neutral-500">{taskNumber.get(t.id)}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-neutral-900 text-sm font-medium">{t.title}</div>
-                    <div className="break-words text-xs leading-relaxed text-neutral-600">{t.detail}</div>
-                    {t.dependsOn.length > 0 && (
-                      <div className="text-neutral-500 text-xs mono mt-0.5">
-                        Depends on #{t.dependsOn.map((d) => taskNumber.get(d) ?? '?').join(', #')}
-                      </div>
-                    )}
-                  </div>
-                  <div className="col-start-2 flex flex-wrap items-center gap-2 lg:col-start-3 lg:justify-end">
-                    <span className="text-xs text-neutral-500" title="Task complexity">Level {t.complexity}</span>
-                    <AssigneeBadge who={t.assignedTo} />
-                    <TaskBadge status={t.status} />
-
-                    {/* Status controls: admin any task, crew only own tasks */}
-                    {(isAdmin || t.assignedTo === 'steve') && t.status !== 'done' && (
-                      <form action={setTaskStatusForm} className="flex gap-1">
-                        <input type="hidden" name="jobId" value={job.id} />
-                        <input type="hidden" name="taskId" value={t.id} />
-                        <input type="hidden" name="status" value={t.status === 'pending' ? 'active' : 'done'} />
-                        <button className="btn-ghost text-xs py-1">
-                          {t.status === 'pending' ? 'Start' : 'Mark done'}
-                        </button>
-                      </form>
-                    )}
-
-                    {/* One-click reassign (admin only) */}
-                    {isAdmin && (
-                      <form action={reassignForm}>
-                        <input type="hidden" name="jobId" value={job.id} />
-                        <input type="hidden" name="taskId" value={t.id} />
-                        <input type="hidden" name="assignedTo" value={t.assignedTo === 'foti' ? 'steve' : 'foti'} />
-                        <button className="btn-ghost text-xs py-1" title="Reassign to the other crew member">⇄</button>
-                      </form>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </section>
-        )}
+        {/* JOB BRIEFING: presentation-only replacement; task records stay intact. */}
+        <JobBriefing source={{
+          description: job.description,
+          status: job.status,
+          estimateRevision: latest?.revision ?? null,
+          approvedRevision: approved?.revision ?? null,
+          planSequence: plan?.sequence ?? null,
+          assignments: plan?.tasks.map((task) => task.assignedTo) ?? [],
+          blockedCount: plan?.tasks.filter((task) => task.status === 'blocked').length ?? 0,
+        }} />
 
         {/* PAYMENTS */}
         <section id="payments" tabIndex={-1} className="card min-w-0 p-4 sm:p-5">
