@@ -80,7 +80,7 @@ export default async function JobPage({
         </section>
 
         {/* JOB DETAILS */}
-        <section id="request" className="card min-w-0 p-4 sm:p-5">
+        <section id="request" tabIndex={-1} className="card min-w-0 p-4 sm:p-5">
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-3">Request</h2>
           <p className="text-neutral-800 text-sm whitespace-pre-wrap">{job.description}</p>
           {Object.keys(job.measurements as object).length > 0 && (
@@ -95,7 +95,7 @@ export default async function JobPage({
         </section>
 
         {/* ESTIMATE */}
-        <section id="estimate" className="card min-w-0 p-4 sm:p-5">
+        <section id="estimate" tabIndex={-1} className="card min-w-0 p-4 sm:p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
               Estimate {latest ? `· rev ${latest.revision}` : ''}
@@ -146,7 +146,7 @@ export default async function JobPage({
 
         {/* PLAN / TASKS */}
         {plan && (
-          <section id="plan" className="card min-w-0 p-4 sm:p-5">
+          <section id="plan" tabIndex={-1} className="card min-w-0 p-4 sm:p-5">
             <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-4">
               Plan of action
             </h2>
@@ -197,7 +197,7 @@ export default async function JobPage({
         )}
 
         {/* PAYMENTS */}
-        <section id="payments" className="card min-w-0 p-4 sm:p-5">
+        <section id="payments" tabIndex={-1} className="card min-w-0 p-4 sm:p-5">
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-4">Payments</h2>
 
           {job.payments.length > 0 && (
@@ -250,7 +250,7 @@ export default async function JobPage({
         </section>
 
         {/* LEDGER */}
-        <section id="ledger" className="card min-w-0 p-4 sm:p-5">
+        <section id="ledger" tabIndex={-1} className="card min-w-0 p-4 sm:p-5">
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-4">
             Job ledger
           </h2>

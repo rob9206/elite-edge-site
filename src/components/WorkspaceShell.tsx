@@ -46,22 +46,26 @@ function Account({ user }: { user: SessionData }) {
 }
 
 export function WorkspaceShell({ user, children, jobName, hasPlan }: Props) {
-  const sections = [
-    ['request', 'Request'], ['estimate', 'Estimate'],
-    ...(hasPlan ? [['plan', 'Plan of action']] : []),
-    ['payments', 'Payments'], ['ledger', 'Ledger'],
-  ];
+  const navigation = (
+    <>
+      <WorkspaceLinks user={user} isIndex={!jobName} />
+      {jobName && (
+        <nav aria-label="Sections in this job" className={styles.sections}>
+          <span>This job</span>
+          <a href="#request">Request</a>
+          <a href="#estimate">Estimate</a>
+          {hasPlan && <a href="#plan">Plan of action</a>}
+          <a href="#payments">Payments</a>
+          <a href="#ledger">Ledger</a>
+        </nav>
+      )}
+    </>
+  );
   return (
     <div className={styles.shell}>
       <aside className={styles.rail}>
         <Link href="/jobs" className={styles.brand} aria-label="Apex Power Ops jobs"><Brand /></Link>
-        <WorkspaceLinks user={user} isIndex={!jobName} />
-        {jobName && (
-          <nav aria-label="Sections in this job" className={styles.sections}>
-            <span>This job</span>
-            {sections.map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}
-          </nav>
-        )}
+        {navigation}
         <Account user={user} />
       </aside>
       <div className={styles.canvas}>
@@ -72,7 +76,7 @@ export function WorkspaceShell({ user, children, jobName, hasPlan }: Props) {
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" /></svg>
             </span>
           </summary>
-          <WorkspaceLinks user={user} isIndex={!jobName} />
+          {navigation}
           <Account user={user} />
         </details>
         <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
