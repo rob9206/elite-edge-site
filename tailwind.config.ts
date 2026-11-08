@@ -1,7 +1,5 @@
 import type { Config } from 'tailwindcss';
 
-// Apex Power Ops — reuses the brand's high-voltage industrial palette
-// (gold on graphite) so the internal tool matches the company identity.
 const config: Config = {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
@@ -27,16 +25,16 @@ const config: Config = {
           100: '#E7E7EB',
         },
         edge: {
-          red: '#D9453B',
-          green: '#36A867',
-          orange: '#E2741E',
-          blue: '#3E86C4',
+          red: '#aa3430',
+          green: '#216b43',
+          orange: '#925412',
+          blue: '#2b5c88',
         },
       },
       fontFamily: {
-        display: ['Saira', 'system-ui', 'sans-serif'],
-        body: ['Barlow', 'system-ui', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        display: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
       },
     },
   },

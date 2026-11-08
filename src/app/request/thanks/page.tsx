@@ -1,17 +1,22 @@
+import Link from 'next/link';
 import { Brand } from '@/components/Brand';
 
 export default function ThanksPage() {
   return (
-    <main className="min-h-screen grid place-items-center px-6 text-center">
-      <div className="max-w-md">
-        <div className="hazard mb-8 rounded" />
-        <div className="flex justify-center mb-6"><Brand ops={false} /></div>
-        <h1 className="font-display font-black uppercase text-3xl text-white">Request received</h1>
-        <p className="text-ink-300 mt-3">
-          Thanks — we’ll reach out within one business day to confirm details and schedule a visit.
+    <>
+      <header className="border-b border-stone-200">
+        <div className="public-brand"><Brand ops={false} /></div>
+      </header>
+      <main className="mx-auto max-w-lg px-6 py-24 text-center">
+        <span className="mx-auto mb-5 grid size-12 place-items-center rounded-full bg-emerald-50 text-emerald-800" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
+        </span>
+        <h1 className="text-3xl font-semibold">Request received</h1>
+        <p className="mt-3 leading-relaxed text-stone-600">
+          We’ll reach out within one business day to confirm details and schedule a visit.
         </p>
-        <a href="/request" className="btn-secondary mt-6">Submit another request</a>
-      </div>
-    </main>
+        <Link href="/request" className="btn-secondary mt-6">Submit another request</Link>
+      </main>
+    </>
   );
 }

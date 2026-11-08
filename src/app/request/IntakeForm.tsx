@@ -23,67 +23,73 @@ export default function IntakeForm() {
   const fields = MEASUREMENT_FIELDS[jobType] ?? [];
 
   return (
-    <form action={action} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="label" htmlFor="customerName">Name</label>
-          <input id="customerName" name="customerName" className="input" required />
-        </div>
-        <div>
-          <label className="label" htmlFor="phone">Phone</label>
-          <input id="phone" name="phone" className="input" required />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="label" htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" className="input" required />
-        </div>
-        <div>
-          <label className="label" htmlFor="address">Service address</label>
-          <input id="address" name="address" className="input" required />
-        </div>
-      </div>
-
-      <div>
-        <label className="label" htmlFor="jobType">Service needed</label>
-        <select
-          id="jobType"
-          name="jobType"
-          className="input"
-          value={jobType}
-          onChange={(e) => setJobType(e.target.value)}
-        >
-          {JOB_TYPE_ENTRIES.map((j) => (
-            <option key={j.key} value={j.key}>{j.label}</option>
-          ))}
-        </select>
-      </div>
-
-      {fields.length > 0 && (
-        <fieldset className="rounded-md border border-ink-700 p-4">
-          <legend className="px-2 text-xs uppercase tracking-wider text-ink-400">
-            Rough sizing (optional — helps us pre-estimate)
-          </legend>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {fields.map((f) => (
-              <div key={f.key}>
-                <label className="label" htmlFor={`m_${f.key}`}>
-                  {f.label} <span className="text-ink-500 normal-case">({f.unit})</span>
-                </label>
-                <input id={`m_${f.key}`} name={`m_${f.key}`} type="number" min="0" step="any" className="input mono" />
-              </div>
-            ))}
+    <form action={action} className="space-y-5">
+      <fieldset className="space-y-4">
+        <legend className="mb-3 text-lg font-semibold tracking-tight">Contact details</legend>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="label" htmlFor="customerName">Name</label>
+            <input id="customerName" name="customerName" autoComplete="name" className="input" required />
           </div>
-        </fieldset>
-      )}
+          <div>
+            <label className="label" htmlFor="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" autoComplete="tel" className="input" required />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="label" htmlFor="email">Email</label>
+            <input id="email" name="email" type="email" autoComplete="email" className="input" required />
+          </div>
+          <div>
+            <label className="label" htmlFor="address">Service address</label>
+            <input id="address" name="address" autoComplete="street-address" className="input" required />
+          </div>
+        </div>
+      </fieldset>
 
-      <div>
-        <label className="label" htmlFor="description">Describe the work</label>
-        <textarea id="description" name="description" rows={4} className="input" required />
-      </div>
+      <fieldset className="space-y-4 border-t border-stone-200">
+        <legend className="mb-3 pt-5 text-lg font-semibold tracking-tight">Job details</legend>
+        <div>
+          <label className="label" htmlFor="jobType">Service needed</label>
+          <select
+            id="jobType"
+            name="jobType"
+            className="input"
+            value={jobType}
+            onChange={(e) => setJobType(e.target.value)}
+          >
+            {JOB_TYPE_ENTRIES.map((j) => (
+              <option key={j.key} value={j.key}>{j.label}</option>
+            ))}
+          </select>
+        </div>
 
-      {state?.error ? <p className="text-sm text-edge-red">{state.error}</p> : null}
+        {fields.length > 0 && (
+          <fieldset className="rounded-2xl border border-stone-200 bg-stone-50/70 p-4">
+            <legend className="px-1.5 text-xs font-medium text-stone-600">
+              Approximate measurements (optional)
+            </legend>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {fields.map((f) => (
+                <div key={f.key}>
+                  <label className="label" htmlFor={`m_${f.key}`}>
+                    {f.label} <span className="font-normal text-stone-600">({f.unit})</span>
+                  </label>
+                  <input id={`m_${f.key}`} name={`m_${f.key}`} type="number" min="0" step="any" className="input mono" />
+                </div>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <div>
+          <label className="label" htmlFor="description">Describe the work</label>
+          <textarea id="description" name="description" rows={4} className="input" required />
+        </div>
+      </fieldset>
+
+      {state?.error ? <p role="alert" className="text-sm text-edge-red">{state.error}</p> : null}
       <Submit />
     </form>
   );

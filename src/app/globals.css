@@ -2,57 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Saira:wght@500;700;800;900&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@layer base {
+  :root {
+    color-scheme: light;
+    --workspace: #fdfcfb;
+    --graphite: #252525;
+    --hairline: #dfdfd9;
+    --secondary: #62635e;
+  }
 
-:root {
-  color-scheme: dark;
-}
+  body {
+    background: var(--workspace);
+    color: var(--graphite);
+    @apply font-body antialiased;
+  }
 
-body {
-  @apply bg-ink-900 text-ink-200 font-body antialiased;
-}
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
 
-h1, h2, h3, h4 {
-  @apply font-display text-white;
-}
+  :focus-visible {
+    outline: 2px solid #6c776d;
+    outline-offset: 3px;
+  }
 
-/* Thin gold hazard rule used as a section accent. */
-.hazard {
-  height: 3px;
-  background: repeating-linear-gradient(-45deg, #e4b45e 0 16px, #131315 16px 32px);
-}
-
-.card {
-  @apply bg-ink-800 border border-ink-700 rounded-lg;
-}
-
-.label {
-  @apply block text-xs font-semibold uppercase tracking-wider text-ink-400 mb-1;
-}
-
-.input {
-  @apply w-full rounded-md bg-ink-850 border border-ink-700 px-3 py-2 text-sm text-white
-    placeholder:text-ink-500 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/40;
+  ::selection {
+    background: #d9e7df;
+    color: #16221c;
+  }
 }
 
-.btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-display
-    font-bold uppercase tracking-wide transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
-}
-.btn-primary {
-  @apply btn bg-gold text-ink-950 hover:bg-gold-hover;
-}
-.btn-secondary {
-  @apply btn border-2 border-ink-600 text-white hover:border-gold hover:text-gold;
-}
-.btn-danger {
-  @apply btn bg-edge-red text-white hover:brightness-110;
-}
-.btn-ghost {
-  @apply btn text-ink-300 hover:text-gold hover:bg-gold/10;
-}
+@layer components {
+  .card {
+    @apply rounded-2xl border bg-white;
+    border-color: var(--hairline);
+  }
 
-.mono {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
+  .label {
+    @apply mb-1.5 block text-sm font-medium;
+  }
+
+  .input {
+    @apply block w-full min-w-0 rounded-xl border bg-white px-3 py-2 text-sm;
+    border-color: #cfcfca;
+    color: var(--graphite);
+  }
+
+  .input::placeholder {
+    color: var(--secondary);
+  }
+
+  .input:focus {
+    outline: 2px solid #777c76;
+    outline-offset: 1px;
+  }
+
+  .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium
+      leading-5 transition-colors disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none;
+  }
+
+  .btn-primary {
+    @apply bg-neutral-900 text-white hover:bg-neutral-700;
+  }
+
+  .btn-secondary {
+    @apply border bg-white hover:bg-stone-100;
+    border-color: var(--hairline);
+  }
+
+  .btn-danger {
+    @apply bg-red-800 text-white hover:bg-red-900;
+  }
+
+  .btn-ghost {
+    @apply text-neutral-700 hover:bg-stone-100 hover:text-neutral-950;
+  }
+
+  .mono {
+    @apply font-mono tabular-nums;
+  }
+
+  .public-brand {
+    @apply mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 sm:px-8;
+  }
+
+  .public-link {
+    @apply text-sm font-medium text-neutral-700 underline decoration-neutral-300 underline-offset-4 hover:text-neutral-950;
+  }
 }
